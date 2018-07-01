@@ -68,6 +68,8 @@ include/config
 include/generated
 arch/*/include/generated
 
+AnyKernel2/zImage
+
 # stgit generated dirs
 patches-*
 
