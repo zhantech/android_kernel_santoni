@@ -1,0 +1,22 @@
+#!/bin/bash
+
+VER=$1
+SUB=$2
+
+rm -f repack_zip/clarity/zImage
+
+if [ -d repack_zip/system ]; then
+	rm -rf repack_zip/system
+fi
+
+mv arch/arm64/boot/Image.gz-dtb repack_zip/clarity/zImage
+
+cd repack_zip
+
+if [ ! $VER ] && [ ! $SUB ]; then
+	VER=0
+	SUB=0
+fi
+
+zip -r ../../release_santoni/Clarity-v$VER.$SUB-AOSP-N_HM4X.zip *
+
