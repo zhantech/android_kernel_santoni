@@ -202,7 +202,7 @@ static LIST_HEAD(devices_list);
 static LIST_HEAD(thresholds_list);
 static int mitigation = 1;
 
-bool mitigation_thermal_core_control __read_mostly = false;
+static bool mitigation_thermal_cc = false;
 
 enum thermal_threshold {
 	HOTPLUG_THRESHOLD_HIGH,
@@ -493,6 +493,11 @@ static ssize_t thermal_config_debugfs_write(struct file *file,
 				pr_debug("Remove voting to %s\n", #name);     \
 		}                                                             \
 	} while (0)
+
+bool mitigation_thermal_core_control(void)
+{
+	return mitigation_thermal_cc;
+}
 
 static void uio_init(struct platform_device *pdev)
 {
@@ -2652,7 +2657,7 @@ static int do_vdd_mx(void)
 		}
 	}
 
-	if ((dis_cnt == thresh[MSM_VDD_MX_RESTRICTION].thresh_ct)) {
+	if (dis_cnt == thresh[MSM_VDD_MX_RESTRICTION].thresh_ct) {
 		ret = remove_vdd_mx_restriction();
 		if (ret)
 			pr_err("Failed to remove vdd mx restriction\n");
@@ -3498,9 +3503,9 @@ static void check_temp(struct work_struct *work)
 	do_core_control(temp);
 
 	if (temp >= msm_thermal_info.core_limit_temp_degC)
-		mitigation_thermal_core_control = true;
+		mitigation_thermal_cc = true;
 	else
-		mitigation_thermal_core_control = false;
+		mitigation_thermal_cc = false;
 
 	do_vdd_mx();
 	do_psm();
@@ -6259,7 +6264,7 @@ static int fetch_cpu_mitigaiton_info(struct msm_thermal_data *data,
 			goto fetch_mitig_exit;
 		}
 		strlcpy((char *) cpus[_cpu].sensor_type, sensor_name,
-			strlen(sensor_name) + 1);
+			strlen((char *) cpus[_cpu].sensor_type));
 		create_alias_name(_cpu, limits, pdev);
 	}
 
