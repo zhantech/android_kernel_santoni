@@ -18,5 +18,5 @@ if [ ! $VER ] && [ ! $SUB ]; then
 	SUB=0
 fi
 
-zip -r ../../release_santoni/Clarity-v$VER.$SUB-AOSP-N_HM4X.zip *
+zip -r ../../release_santoni/Clarity-v$VER.$SUB-N_HM4X.zip *
 
